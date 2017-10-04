@@ -1,4 +1,13 @@
 defmodule GithubStargazers.Minion do
+  def loop do
+    receive do
+      {sender_pid, username} ->
+        send(sender_pid, {:ok, get_stats(username)})
+      _ ->
+        IO.puts("Don't know how to process this message.")
+    end
+    loop()
+  end
   def get_stats(username) do
     result = url_for(username) |> HTTPoison.get() |> parse_response()
 
