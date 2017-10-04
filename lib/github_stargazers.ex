@@ -1,18 +1,10 @@
 defmodule GithubStargazers do
-  @moduledoc """
-  Documentation for GithubStargazers.
-  """
+  def get_stars(stars) do
+    coordinator_pid = spawn(GithubStargazers.Gru, :loop, [[], Enum.count(stars)])
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> GithubStargazers.hello
-      :world
-
-  """
-  def hello do
-    :world
+    stars |> Enum.each(fn star -> 
+      worker_pid = spawn(GithubStargazers.Minion, :loop, [])
+      send(worker_pid, {coordinator_pid, star})
+    end)
   end
 end
